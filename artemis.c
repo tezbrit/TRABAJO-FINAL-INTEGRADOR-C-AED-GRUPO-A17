@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "simulador.h"
+#include "artemis.h"
 
 
-void ejecutar_simulacion(NodoSimulacion** prim) {
+void ejecutar_simulacion(NodoSimulacion** prim, NodoSimulacion** ult) {
     
     // 1. Declaración de variables
     double h, dt, r, v, T_seg, T_min, ac, desviacion;
@@ -28,4 +28,19 @@ void ejecutar_simulacion(NodoSimulacion** prim) {
     printf("Período: %.2f s (%.2f min)\n", T_seg, T_min);
     printf("Aceleración centrípeta: %.2f cm/s^2\n", ac);
     printf("Desviación lateral: %.2f cm\n\n", desviacion);
+    
+    // 3. Actualización del estado
+    NodoSimulacion* q = (NodoSimulacion*)malloc(sizeof(NodoSimulacion));
+    q->altitud = h;
+    q->velocidad = v;
+    q->desviacion = desviacion;
+    q->prox = NULL; 
+
+    if (*prim == NULL) {
+        *prim = q;
+        *ult = q;
+    } else {
+        (*ult)->prox = q; 
+        *ult = q;         
+    }
 }
