@@ -10,9 +10,9 @@ Trabajo Práctico Integrador Final — Lenguaje C
 
 | Integrante | Usuario de GitHub | Módulo a cargo |
 |---|---|---|
-| Agus Gonzalez | `@COMPLETAR` | Módulo de cabecera (`artemis.h`) y README |
 | COMPLETAR | `@COMPLETAR` | COMPLETAR |
-| COMPLETAR | `@COMPLETAR` | COMPLETAR |
+| Gonzalez Agustín | `@COMPLETAR` | Módulo de cabecera (`artemis.h`) y README |
+| Miranda Jerónimo | `@jeritox123` | Módulo de lógica ('artemis.c') |
 | COMPLETAR | `@COMPLETAR` | COMPLETAR |
 
 **Comisión:** COMPLETAR
