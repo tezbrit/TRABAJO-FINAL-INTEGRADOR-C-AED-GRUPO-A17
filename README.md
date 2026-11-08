@@ -157,7 +157,7 @@ gcc -Wall -Wextra -o artemis main.c artemis.c validaciones.c -lm
 
 Cada integrante registra acá las consultas que hizo a herramientas de IA, siguiendo el mismo formato.
 
-### Agus Gonzalez — Claude (Anthropic)
+### Gonzalez Agustín — Claude (Anthropic)
 
 | # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
 |---|---|---|---|---|
@@ -165,7 +165,59 @@ Cada integrante registra acá las consultas que hizo a herramientas de IA, sigui
 | 2 | Revisión del módulo de cabecera | "Ese es mi módulo, si quiero cambiarle algo no hay drama, respetar los nombres" + el `artemis.h` original del grupo. | Header revisado: guarda de inclusión corregida (`SIMULADOR_H` → `ARTEMIS_H`), constantes del escenario, rangos de validación, factores de conversión CGS→SI, prototipos de cálculo y de manejo de la cola (`encolar`, `liberar_cola`), comentarios con unidades. | Se comprobó que las constantes CGS coincidan con los datos de la consigna y que se mantuvieran los nombres ya usados por el grupo. Se consensuaron los prototipos con el resto del equipo. COMPLETAR |
 | 3 | Armado del README | "Armar el README.md con todos los prompts" | Estructura del README con los puntos a–e de la consigna. | Se completaron integrantes, reglas del juego y registros del resto del equipo. COMPLETAR |
 
-### Ulises Pereyra — Claude (Anthropic)
+### Miranda Jerónimo — Gemini (pro)
+
+| # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
+|---|---|---|---|---|
+| 1 | Brindo infomacion al agente | en el notebook que tenes adjunto tenes el documento"trabajo final integrador C" ese contiene todas las consignas que debe cumplir mi trabajo, los escenarios y lo que evaluará la profesora
+mi escenario es el nro 2 y yo me voy a encargar de el modulo de lógica, ya lo tengo hecho en pseudocodigo pero quiero que me ayudes a pasarlo al lenguaje C, te voy a ir mandando fragmentos de mi codigo pasado a C y me corregis si está algo mal explicandome por que esta mal y como debo cambiarlo | Perfecto Jerónimo, quedo a disposicion hasta que me envíes tu codigo para que podamos corregirlo juntos | no adapté nada, fue un prompt puramente informativo |
+| 2 | le envío primera parte de mi módulo para correccion de errores de sintáxis de lenguaje C | esta es la primera parte de artemis.c, ayudame a corregir lo que éstá mal
+#include <stdio.h>
+#include "simulador.h"
+
+void ejecutar_simulacion(NodoSimulacion* prim, NodoSimulacion* ult) {
+    
+    // 1. Declaración de variables
+    double h, dt, r, v, T_seg, T_min, ac, desviacion;
+
+    printf("Ingrese la altitud de la órbita (h) en metros: ");
+    scanf("%f", h);
+    
+    printf("Ingrese duración del pulso lateral (dt) en segundos: ");
+    scanf("%f", dt); | Errores hallados: Faltan librerías importantes, la función no recibe punteros dobles (lo que impedirá modificar la lista original), a los scanf les falta el & (lo que causaría un segmentation fault) y se usa %f en vez de %lf para los double. | analicé y corregi todos los errores que me indicó |
+    | 3 | Envío segunda parte de mi módulo para corrección de sintáxis de lenguaje C | segunda parte:
+// 2. Ejecución de algoritmos de simulación en MKS
+    r = RT + h;
+    v = sqrt((G * MT) / r); 
+    T_seg = (2.0 * M_PI * r) / v;
+    T_min = T_seg / 60;
+    
+    ac = v^2 / r; 
+    desviacion = 0.5 * A_LAT * dt^2;
+
+    printf("\n--- RESULTADOS ---\n");
+    printf("Velocidad orbital: %d m/s\n", v);
+    printf("Período: %f s (%f min)\n", T_seg, T_min);
+    printf("Aceleración centrípeta: %d m/s^2\n", ac);
+    printf("Desviación lateral: %d m\n\n", desviacion); | Errores hallados: Uso del símbolo ^ para elevar al cuadrado (en C eso es una operación de bits lógica XOR, no potencia), y usar %d (para enteros) al intentar imprimir un double con printf. | corregí en mi codigo los errores que me indicó |
+    | 4 | envío tercer y ultima parte de el código de mi módulo | ultima parte:
+// 3. Actualización del estado
+    NodoSimulacion q = malloc(sizeof(NodoSimulacion));
+    q.altitud = h;
+    q.velocidad = v;
+    q.desviacion = desviacion;
+    q.prox = NULL; 
+
+    if (prim == NULL) {
+        prim = q;
+        ult = q;
+    } else {
+        ult.prox = q; 
+        ult = q;        
+    }
+} | Errores hallados: Se declara 'q' sin el asterisco de puntero, se usa el punto . en lugar de la flecha -> para acceder a los campos, y no se desreferencian los punteros de la lista (prim en vez de *prim). | corregí esta ultima parte y volví a controlar todo el código completo |
+
+### Pereyra Ulises — Claude (Anthropic)
 
 | # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
 |---|---|---|---|---|
@@ -174,11 +226,7 @@ Cada integrante registra acá las consultas que hizo a herramientas de IA, sigui
 | 3 |Modularización de la validación |"¿Cómo hago una función de validación modular en C que reciba un mensaje, un valor mínimo y un valor máximo por parámetro, y obligue al usuario a ingresar un 'double' que esté estrictamente dentro de ese rango?" |Una implementación modular que generaliza el proceso de solicitud, lectura, limpieza de buffer y evaluación condicional en una única función paramétrica, reduciendo la duplicación de código. |Las funciones generadas se organizaron separando la definición de prototipos en validaciones.h de la implementación lógica en validaciones.c. Posteriormente, se ejecutaron pruebas de validación locales ingresando caracteres alfabéticos, símbolos especiales y valores fuera de rango para confirmar la estabilidad del módulo antes de su integración. |
 
 
-### COMPLETAR (integrante) — COMPLETAR (herramienta)
 
-| # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
-|---|---|---|---|---|
-| 1 | | | | |
 
 ### Reflexión del equipo sobre el uso de IA
 
