@@ -23,7 +23,7 @@ int pedirEnteroRango(const char* mensaje, int min, int max) {
     return valor;
 }
 
-double pedirDoublePositivo(const char* mensaje) {
+double pedirDoblePositivo(const char* mensaje) {
     double valor;
     int leidos;
     
@@ -40,6 +40,27 @@ double pedirDoublePositivo(const char* mensaje) {
         }
         
     } while (leidos != 1 || valor < 0);
+    
+    return valor;
+}
+
+double pedirDoubleRango(const char* mensaje, double min, double max) {
+    double valor;
+    int leidos;
+    
+    do {
+        printf("%s", mensaje);
+        leidos = scanf("%lf", &valor);
+        
+        while(getchar() != '\n'); 
+        
+        if (leidos != 1) {
+            printf("Error: Entrada invalida. Ingrese un numero.\n");
+        } else if (valor < min || valor > max) {
+            printf("Error: Valor fuera de rango de orbita LEO. Debe estar entre %.2e y %.2e cm.\n", min, max);
+        }
+        
+    } while (leidos != 1 || valor < min || valor > max);
     
     return valor;
 }
