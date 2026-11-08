@@ -157,13 +157,29 @@ gcc -Wall -Wextra -o artemis main.c artemis.c validaciones.c -lm
 
 Cada integrante registra acá las consultas que hizo a herramientas de IA, siguiendo el mismo formato.
 
-### Agus Gonzalez — Claude (Anthropic)
+### COMPLETAR (integrante) — COMPLETAR (herramienta)
+
+| # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
+|---|---|---|---|---|
+| 1 | | | | |
+
+### Gonzalez Agustín — Claude (Anthropic)
 
 | # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
 |---|---|---|---|---|
 | 1 | Análisis del escenario | Se compartió la consigna completa y la Situación Problema 2 (órbita LEO). | Resolución de las preguntas a–d con las fórmulas de MCU y gravitación, valores de referencia y una propuesta de arquitectura modular. | Se verificaron los cálculos a mano / con calculadora: v ≈ 7.793 m/s, T ≈ 88,2 min, ac ≈ 9,25 m/s², d = 25 m. COMPLETAR |
-| 2 | Revisión del módulo de cabecera | "Ese es mi módulo, si quiero cambiarle algo no hay drama, respetar los nombres" + el `artemis.h` original del grupo. | Header revisado: guarda de inclusión corregida (`SIMULADOR_H` → `ARTEMIS_H`), constantes del escenario, rangos de validación, factores de conversión CGS→SI, prototipos de cálculo y de manejo de la cola (`encolar`, `liberar_cola`), comentarios con unidades. | Se comprobó que las constantes CGS coincidan con los datos de la consigna y que se mantuvieran los nombres ya usados por el grupo. Se consensuaron los prototipos con el resto del equipo. COMPLETAR |
+| 2 | Corrección de sintaxis de C (Punteros y lectura de datos) | "Ese es mi módulo, si quiero cambiarle algo no hay drama, respetar los nombres" + el `artemis.h` original del grupo. | Header revisado: guarda de inclusión corregida (`SIMULADOR_H` → `ARTEMIS_H`), constantes del escenario, rangos de validación, factores de conversión CGS→SI, prototipos de cálculo y de manejo de la cola (`encolar`, `liberar_cola`), comentarios con unidades. | Se comprobó que las constantes CGS coincidan con los datos de la consigna y que se mantuvieran los nombres ya usados por el grupo. Se consensuaron los prototipos con el resto del equipo. COMPLETAR |
 | 3 | Armado del README | "Armar el README.md con todos los prompts" | Estructura del README con los puntos a–e de la consigna. | Se completaron integrantes, reglas del juego y registros del resto del equipo. COMPLETAR |
+
+
+### Miranda Jerónimo — Gemini (pro)
+
+| # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
+|---|---|---|---|---|
+| 1 |Brindo infomacion al agente |"en el notebook que tenes adjunto tenes el documento'trabajo final integrador C' ese contiene todas las consignas que debe cumplir mi trabajo, los escenarios y lo que evaluará la profesora. Mi escenario es el nro 2 y yo me voy a encargar de el modulo de lógica, ya lo tengo hecho en pseudocodigo pero quiero que me ayudes a pasarlo al lenguaje C, te voy a ir mandando fragmentos de mi codigo pasado a C y me corregis si está algo mal explicandome por que esta mal y como debo cambiarlo" |"Perfecto Jerónimo, quedo a disposicion hasta que me envíes tu codigo para que podamos corregirlo juntos." |Se configuró el rol del agente exclusivamente como revisor de sintaxis. Se validó que la IA no generara la lógica desde cero, garantizando que el diseño original planteado en pseudocódigo se mantuviera intacto. |
+| 2 |Control de rango y tipo de dato |"esta es la primera parte de artemis.c, ayudame a corregir lo que está mal: [Código con scanf("%f", h) y paso por valor de la lista]" |"Errores hallados: Faltan librerías importantes, la función no recibe punteros dobles, a los scanf les falta el & (lo que causaría un segmentation fault) y se usa %f en vez de %lf." |Se aplicaron las correcciones manuales en artemis.c: se actualizaron las firmas para recibir NodoSimulacion** (punteros dobles), se insertó el operador de dirección & para resguardar la memoria en las lecturas, y se ajustaron los formatos a %lf para los double. |
+| 3 |Depuración de operadores aritméticos y salidas por consola |"segunda parte: // 2. Ejecución de algoritmos de simulación en MKS: ac = v^2 / r; [...] printf("Velocidad: %d m/s", v);" |"Errores hallados: Uso del símbolo ^ para elevar al cuadrado (en C es operación XOR de bits, no potencia), y usar %d (para enteros) al intentar imprimir un double." |Se modificó la aritmética del código reemplazando la sintaxis errónea de potencias por multiplicaciones algebraicas directas (ej: v * v y dt * dt). Se cambiaron todos los modificadores de printf a %.2f para mostrar correctamente las cifras decimales calculadas. |
+| 4 |Corrección de manejo de memoria dinámica y listas enlazadas |"última parte: // 3. Actualización del estado: NodoSimulacion q = malloc(sizeof(NodoSimulacion)); q.altitud = h; [...] if (prim == NULL)" |"Errores hallados: Se declara 'q' sin el asterisco de puntero, se usa el punto . en lugar de la flecha -> para acceder a los campos, y no se desreferencian los punteros de la lista." |Se reestructuró la asignación dinámica usando NodoSimulacion* q. Se corrigió el acceso a las variables del struct adoptando el operador flecha (->) y se desreferenciaron los parámetros (*prim, *ult) para garantizar la persistencia del estado en la cola de simulación global. |
 
 ### Ulises Pereyra — Claude (Anthropic)
 
@@ -174,11 +190,6 @@ Cada integrante registra acá las consultas que hizo a herramientas de IA, sigui
 | 3 |Modularización de la validación |"¿Cómo hago una función de validación modular en C que reciba un mensaje, un valor mínimo y un valor máximo por parámetro, y obligue al usuario a ingresar un 'double' que esté estrictamente dentro de ese rango?" |Una implementación modular que generaliza el proceso de solicitud, lectura, limpieza de buffer y evaluación condicional en una única función paramétrica, reduciendo la duplicación de código. |Las funciones generadas se organizaron separando la definición de prototipos en validaciones.h de la implementación lógica en validaciones.c. Posteriormente, se ejecutaron pruebas de validación locales ingresando caracteres alfabéticos, símbolos especiales y valores fuera de rango para confirmar la estabilidad del módulo antes de su integración. |
 
 
-### COMPLETAR (integrante) — COMPLETAR (herramienta)
-
-| # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
-|---|---|---|---|---|
-| 1 | | | | |
 
 ### Reflexión del equipo sobre el uso de IA
 
