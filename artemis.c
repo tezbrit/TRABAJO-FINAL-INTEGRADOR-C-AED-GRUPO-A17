@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "artemis.h"
+#include "validaciones.h"
 
 
 void ejecutar_simulacion(NodoSimulacion** prim, NodoSimulacion** ult) {
@@ -9,11 +10,8 @@ void ejecutar_simulacion(NodoSimulacion** prim, NodoSimulacion** ult) {
     // 1. Declaración de variables
     double h, dt, r, v, T_seg, T_min, ac, desviacion;
 
-    printf("Ingrese la altitud de la órbita (h) en centímetros: ");
-    scanf("%lf", &h);
-    
-    printf("Ingrese duración del pulso lateral (dt) en segundos: ");
-    scanf("%lf", &dt);
+    h = pedirDoubleRango("Ingrese la altitud de la orbita (h) en centimetros: ", H_MIN, H_MAX);
+    dt = pedirDoublePositivo("Ingrese duracion del pulso lateral (dt) en segundos: ");
 
     // 2. Ejecución de algoritmos de simulación en CGS
     r = RT + h;
