@@ -31,6 +31,10 @@ void ejecutar_simulacion(NodoSimulacion** prim, NodoSimulacion** ult) {
     
     // 3. Actualización del estado
     NodoSimulacion* q = (NodoSimulacion*)malloc(sizeof(NodoSimulacion));
+    if (q == NULL){
+        printf("Error: no hay memoria suficiente para guardar el estado.\n");
+        return;
+    }
     q->altitud = h;
     q->velocidad = v;
     q->desviacion = desviacion;
