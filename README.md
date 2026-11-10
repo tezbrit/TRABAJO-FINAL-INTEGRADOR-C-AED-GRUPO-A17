@@ -10,12 +10,12 @@ Trabajo Práctico Integrador Final — Lenguaje C
 
 | Integrante | Usuario de GitHub | Módulo a cargo |
 |---|---|---|
-| COMPLETAR | `@COMPLETAR` | COMPLETAR |
-| Gonzalez Agustín | `@COMPLETAR` | Módulo de cabecera (`artemis.h`) y README |
+| Brittez Octavio Agustín | `@tezbrit` | `main.c`, `simulador.h` y `simulador.c` |
+| Gonzalez Agustín | `@1zgus` | Módulo de cabecera (`artemis.h`) y README |
 | Miranda Jerónimo | `@jeritox123` | Módulo de lógica (`artemis.c`) |
-| COMPLETAR | `@COMPLETAR` | COMPLETAR |
+| COMPLETAR | `@ulisesivan123` | COMPLETAR |
 
-**Comisión:** COMPLETAR
+**Comisión:** K1.1 / ISI A
 
 ---
 
@@ -62,7 +62,14 @@ Tras apagar sus motores de ascenso, la nave **Orion** es inyectada en una órbit
 
 **Reglas del juego / simulación**
 
-COMPLETAR cuando esté definida la mecánica (por ejemplo: altitud inicial, combustible disponible, cantidad de turnos, condiciones de éxito y de fallo).
+El programa funciona con un menú principal con 3 opciones y la opción de salir:
+
+    1) Simular con mis propios datos: el usuario ingresa la altitud de la órbita (entre 160 km y 2.000 km) y la duración del pulso lateral. El programa calcula velocidad orbital, período, aceleración centrípeta y desviación lateral, y guarda el resultado en el historial.
+    2) Resolver el caso de la consigna: responde las 4 preguntas del enunciado con los datos originales (h = 192 km, m = 33.000 kg, a = 0,50 m/s², Δt = 10 s) y los muestra en unidades SI. Verifica que la fuerza gravitatoria y la fuerza centrípeta dan el mismo valor. También guarda el resultado en el historial.
+    3) Ver historial: muestra una tabla con todas las simulaciones hechas en la sesión, en el orden en que se hicieron (es una cola: la primera que entra es la primera que se muestra).
+    0) Salir: libera la memoria de la cola y termina el programa.
+
+Cómo ingresar la altitud: el programa trabaja en CGS, entonces la altitud se escribe en centímetros. Para 192 km se escribe 19200000 (o 1.92e7).
 
 Restricciones de dominio que valida el programa:
 - La altitud debe estar entre **160 km y 2.000 km** (rango LEO). Por debajo, el rozamiento atmosférico impide mantener la órbita.
@@ -77,6 +84,8 @@ Restricciones de dominio que valida el programa:
 ```
 .
 ├── main.c            # Función main(), menú principal y flujo general
+├── simulador.h       # Prototipos de: resolver_caso_consigna, mostrar_historial, contar_estados
+├── simulador.c       # Fórmulas físicas, manejo de la cola (encolar/liberar_cola) y reportes
 ├── artemis.h         # Constantes, struct NodoSimulacion y prototipos de la simulación
 ├── artemis.c         # Cálculos físicos, manejo de la cola y lógica de la simulación
 ├── validaciones.h    # Prototipos de ingreso seguro de datos
@@ -93,6 +102,8 @@ graph TD
     M --> V[validaciones.h / validaciones.c<br/>Ingreso seguro de datos]
     A --> V
     A --> Q[(Cola de NodoSimulacion<br/>memoria dinámica)]
+    M --> S[simulador.h / simulador.c<br/>Fórmulas, cola y reportes]
+    S --> Q
 ```
 
 ### Estructura de datos
@@ -162,7 +173,8 @@ Cada integrante registra acá las consultas que hizo a herramientas de IA, sigui
 
 | # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
 |---|---|---|---|---|
-| 1 | | | | |
+| 1 |	Primer intento: generar un simulador completo y plan de trabajo |"Actúa como un Senior C Developer y un Tutor Académico... desarrolla el simulador interactivo por consola en C... modularización: main.c, simulador.h, simulador.c, validaciones.h y validaciones.c... comenta casi cada línea... incluye un Glosario de Defensa". Se adjuntó el reglamento de la cátedra. |Un simulador completo con structs `Mision/Resultados`, validaciones propias y un plan de roles. |Se descartó el código: el grupo ya había definido otra arquitectura (cola enlazada con `NodoSimulacion`, unidades CGS, `artemis.h/.c`) y no encajaba. Se conservó solo la idea de comentar el código para poder defenderlo. |
+| 2 |Entender cómo trabajar sin experiencia previa | "No tenemos suficiente conocimiento de GitHub, repositorios, trabajo remoto, IDE para C, cómo compilar ni ejecutar... proporciona la metodología más acorde para empezar este trabajo grupal y en qué IDE nos conviene". | Explicación desde cero de qué es compilar, IDE, repositorio y commit, y pasos para instalar un code::blocks y probar el programa. | el grupo decidió utilizar Visual Studio Code para mantener la interfaz intuitiva y usar la consola integrada del mismo para los commits y compilaciones |
 
 ### Gonzalez Agustín — Claude (Anthropic)
 
@@ -192,4 +204,6 @@ Cada integrante registra acá las consultas que hizo a herramientas de IA, sigui
 
 ### Reflexión del equipo sobre el uso de IA
 
-COMPLETAR: qué sugerencias de la IA se descartaron o modificaron y por qué, qué errores se detectaron en el código propuesto y qué se aprendió en el proceso.
+    - Se descartó el primer código generado porque no respetaba la arquitectura que el grupo ya había decidido. Aprendimos que la IA tiene que adaptarse al proyecto, y no al revés.
+    - Al juntar los módulos aparecieron errores de integración: los prototipos de un .h no coincidían con las funciones del .c, y había funciones declaradas en artemis.h que nadie había escrito. Un archivo puede compilar por separado y fallar al unirlos.
+    - Detectamos que validaciones.c acepta nan como número y que se cuelga si se cierra la entrada. [Se corrigió con ayuda de Claude que sugirió utilizar un `isFinite(valor)` para no permitir el ingreso de NAN y, para el caso del bucle infinito al cerrar el teclado, cambiamos el viejo `while` por `limpiarLinea()` y `entradaCerrada()` que se llama cuando `scanf` devuelve `EOF`, avisa y termina el programa con `exit(0)`]
