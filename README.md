@@ -169,7 +169,7 @@ gcc -Wall -Wextra -o artemis main.c artemis.c validaciones.c -lm
 Cada integrante registra acá las consultas que hizo a herramientas de IA, siguiendo el mismo formato.
 
 
-### Brittez Octavio — COMPLETAR (herramienta)
+### Brittez Octavio — Claude (Anthropic)
 
 | # | Tarea | Prompt / consulta | Qué se obtuvo | Cómo se validó / adaptó |
 |---|---|---|---|---|
