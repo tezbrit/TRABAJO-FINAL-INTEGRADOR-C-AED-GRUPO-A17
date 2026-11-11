@@ -13,7 +13,7 @@ Trabajo Práctico Integrador Final — Lenguaje C
 | Brittez Octavio Agustín | `@tezbrit` | `main.c`, `simulador.h` y `simulador.c` |
 | Gonzalez Agustín | `@1zgus` | Módulo de cabecera (`artemis.h`) y README |
 | Miranda Jerónimo | `@jeritox123` | Módulo de lógica (`artemis.c`) |
-| COMPLETAR | `@ulisesivan123` | Módulo de Validaciones e Interfaz (validaciones.c / .h |
+| Pereyra Ulises | `@ulisesivan123` | Módulo de Validaciones e Interfaz (`validaciones.c / .h`) |
 
 **Comisión:** K1.1 / ISI A
 
