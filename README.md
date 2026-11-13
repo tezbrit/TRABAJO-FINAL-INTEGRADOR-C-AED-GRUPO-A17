@@ -84,12 +84,16 @@ Restricciones de dominio que valida el programa:
 ```
 .
 ├── main.c            # Función main(), menú principal y flujo general
-├── simulador.h       # Prototipos de: resolver_caso_consigna, mostrar_historial, contar_estados
-├── simulador.c       # Fórmulas físicas, manejo de la cola (encolar/liberar_cola) y reportes
-├── artemis.h         # Constantes, struct NodoSimulacion y prototipos de la simulación
-├── artemis.c         # Cálculos físicos, manejo de la cola y lógica de la simulación
+├── artemis.h         # Constantes, struct NodoSimulacion y prototipos
+├── artemis.c         # Pide datos, calcula y guarda la simulación
+├── simulador.h       # Prototipos del simulador
+├── simulador.c       # Fórmulas físicas, cola (encolar/liberar_cola) e historial
+├── interfaz.h        # Prototipo del dibujo del trayecto
+├── interfaz.c        # Dibujo en consola o llamada a la ventana
+├── ventana.h         # Prototipo de la ventana gráfica
+├── ventana.c         # Ventana animada con raylib (solo con USAR_RAYLIB)
 ├── validaciones.h    # Prototipos de ingreso seguro de datos
-├── validaciones.c    # Lectura validada de enteros, flotantes y caracteres
+├── validaciones.c    # Lectura validada de enteros y reales
 ├── Makefile          # Compilación del proyecto
 └── README.md
 ```
@@ -98,12 +102,20 @@ Restricciones de dominio que valida el programa:
 
 ```mermaid
 graph TD
-    M[main.c<br/>Menú principal] --> A[artemis.h / artemis.c<br/>Cálculos físicos y simulación]
-    M --> V[validaciones.h / validaciones.c<br/>Ingreso seguro de datos]
+    M["main.c<br/>Menú principal"] --> A["artemis.h / artemis.c<br/>Pide datos, calcula y guarda la simulación"]
+    M --> V["validaciones.h / validaciones.c<br/>Ingreso seguro de datos"]
+    M --> S["simulador.h / simulador.c<br/>Fórmulas físicas, cola, historial y puntos de la órbita"]
+    M --> I["interfaz.h / interfaz.c<br/>Dibujo del trayecto"]
     A --> V
-    A --> Q[(Cola de NodoSimulacion<br/>memoria dinámica)]
-    M --> S[simulador.h / simulador.c<br/>Fórmulas, cola y reportes]
+    A --> Q[("Cola de NodoSimulacion<br/>memoria dinámica")]
     S --> Q
+    I -->|"pide fórmulas y puntos"| S
+    I -->|"lee la última simulación"| Q
+    I -->|"solo si se compila con USAR_RAYLIB"| W["ventana.h / ventana.c<br/>Ventana gráfica animada"]
+    W --> R["raylib<br/>librería gráfica externa"]
+
+    classDef externa fill:#eeeeee,stroke:#999999,stroke-dasharray: 5 5
+    class R externa
 ```
 
 ### Estructura de datos
@@ -123,16 +135,25 @@ Las funciones que modifican la cola reciben punteros dobles (`NodoSimulacion** p
 
 ### Funciones principales (`artemis.h`)
 
-| Función | Descripción |
-|---|---|
-| `velocidad_orbital(r)` | Devuelve `√(G·MT / r)` |
-| `periodo_orbital(r, v)` | Devuelve `2π·r / v` |
-| `aceleracion_centripeta(v, r)` | Devuelve `v² / r` |
-| `fuerza_gravitatoria(m, r)` | Devuelve `G·MT·m / r²` |
-| `desviacion_lateral(a, dt)` | Devuelve `½·a·dt²` |
-| `encolar(prim, ult, ...)` | Agrega un estado al final de la cola |
-| `liberar_cola(prim, ult)` | Libera todos los nodos y deja los punteros en `NULL` |
-| `ejecutar_simulacion(prim, ult)` | Ejecuta el ciclo de simulación |
+| Función | Módulo | Descripción |
+|---|---|---|
+| `velocidad_orbital(r)` | `simulador.c` | Devuelve `√(G·MT / r)` |
+| `periodo_orbital(r, v)` | `simulador.c` | Devuelve `2π·r / v` |
+| `aceleracion_centripeta(v, r)` | `simulador.c` | Devuelve `v² / r` |
+| `fuerza_gravitatoria(m, r)` | `simulador.c` | Devuelve `G·MT·m / r²` |
+| `desviacion_lateral(a, dt)` | `simulador.c` | Devuelve `½·a·dt²` |
+| `encolar(prim, ult, ...)` | `simulador.c` | Agrega un estado al final de la cola |
+| `liberar_cola(prim, ult)` | `simulador.c` | Libera todos los nodos y deja los punteros en `NULL` |
+| `contar_estados(prim)` | `simulador.c` | Cuenta los nodos de la cola |
+| `mostrar_historial(prim)` | `simulador.c` | Muestra la cola como tabla |
+| `resolver_caso_consigna(prim, ult)` | `simulador.c` | Resuelve las 4 preguntas con los datos del enunciado y guarda el resultado |
+| `generar_trayectoria(altitud, cantidad, xs, ys)` | `simulador.c` | Calcula los puntos (x, y) de una vuelta completa |
+| `ejecutar_simulacion(prim, ult)` | `artemis.c` | Pide los datos al usuario, calcula y guarda el estado |
+| `mostrar_trayecto(ultimo)` | `interfaz.c` | Dibuja la órbita de la última simulación |
+| `ventana_orbita(...)` | `ventana.c` | Abre la ventana gráfica y anima la nave |
+| `pedirEnteroRango(msg, min, max)` | `validaciones.c` | Pide un entero dentro de un rango |
+| `pedirDoublePositivo(msg)` | `validaciones.c` | Pide un real no negativo |
+| `pedirDoubleRango(msg, min, max)` | `validaciones.c` | Pide un real dentro de un rango |
 
 Internamente todos los cálculos se hacen en CGS; los resultados se muestran al usuario en SI.
 
@@ -155,12 +176,53 @@ make clean
 
 Compilación manual sin Makefile:
 
+### Requisitos
+
+- Compilador `gcc` (en Windows viene incluido con raylib, ver abajo).
+- **Opcional:** la librería gráfica **raylib**, necesaria solo para la ventana animada. Sin ella el programa funciona igual y la opción 4 dibuja con letras en la consola.
+
+### En Windows, con ventana gráfica (raylib)
+
+1. Descargar e instalar raylib desde **raylib.com** con el instalador de Windows. Se instala en `C:\raylib`, con un compilador (w64devkit) incluido.
+2. Abrir `C:\raylib\w64devkit\w64devkit.exe` (una consola de comandos).
+3. Entrar a la carpeta del proyecto, usando barras `/`:
+   ```bash
+   cd C:/Users/USUARIO/Desktop/artemis
+   ```
+4. Compilar (una sola línea):
+   ```bash
+   gcc -Wall -DUSAR_RAYLIB -o artemis main.c artemis.c simulador.c interfaz.c ventana.c validaciones.c -lraylib -lopengl32 -lgdi32 -lwinmm -lm
+   ```
+   Si no encuentra `raylib.h` o `libraylib.a`, agregar antes de `-lraylib`: `-I C:/raylib/raylib/src -L C:/raylib/raylib/lib`.
+5. Ejecutar:
+   ```bash
+   ./artemis.exe
+   ```
+
+### Solo consola (sin raylib)
+
 ```bash
-gcc -Wall -Wextra -o artemis main.c artemis.c validaciones.c -lm
+gcc -Wall -o artemis main.c artemis.c simulador.c interfaz.c ventana.c validaciones.c -lm
+./artemis
 ```
 
-> El flag `-lm` es necesario porque se usa `sqrt()` de `math.h`.
-> En Windows el ejecutable se llama `artemis.exe`.
+### Con Makefile
+
+```bash
+make              # compila sin ventana gráfica
+make RAYLIB=1     # compila con ventana gráfica (requiere raylib instalada)
+make run          # compila y ejecuta
+make clean        # borra los archivos generados (hacerlo antes de cambiar de modo)
+```
+
+> `-lm` es necesario porque se usan `sqrt()`, `sin()` y `cos()` de `math.h`. La macro `USAR_RAYLIB` activa la ventana: si no se define, `ventana.c` queda vacío y el programa compila sin raylib.
+
+### Ejemplo de uso
+
+1. Ejecutar el programa y elegir la opción `1`.
+2. Ingresar la altitud `19200000` (192 km) y la duración del pulso `10`.
+3. Elegir la opción `4` para ver el trayecto.
+4. Elegir `0` para salir.
 
 ---
 
